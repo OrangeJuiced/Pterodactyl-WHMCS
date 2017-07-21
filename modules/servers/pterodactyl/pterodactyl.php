@@ -175,7 +175,7 @@ function pterodactyl_ConfigOptions()
         'auto_deploy' => array(
             'Type' => 'yesno',
             'Default' => 'yes',
-            'Description' => 'Tick to enable auto deploy. You do not need the below options with auto deploy enabled.',
+            'Description' => 'Tick to enable auto deploy. You do not need to set the node and allocation if you do so.',
         ),
         'node' => array(
             'Type' => 'text',
@@ -306,7 +306,7 @@ function pterodactyl_CreateAccount(array $params)
         {
             //Begin by creating the user on the panel side
             $data = array("email" => $params['clientsdetails']['email'],
-                          "username" => $params['clientsdetails']['email'],
+                          "username" => $params['clientsdetails']['firstname'] . $params['clientsdetails']['lastname'] . "#" . generate_username(),
                           "name_first" => $params['clientsdetails']['firstname'],
                           "name_last" => $params['clientsdetails']['lastname'],
                           "root_admin" => false,
@@ -338,7 +338,7 @@ function pterodactyl_CreateAccount(array $params)
         $service = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/services/'.$new_server['service_id'].'?include=options.variables', 'GET');
 
         $replaceableFields = array('{{servicename}}', '{{userid}}');
-        $dataToReplaceWith = array($service['data']['attributes']['name'], $user_id);
+        $dataToReplaceWith = array($service['data']['attributes']['name'], $params['clientsdetails']['firstname']);
 
         $new_server['memory']      = handle_overide($params, 'memory',      'configoption1' );
         $new_server['swap']        = handle_overide($params, 'swap',        'configoption2' );
