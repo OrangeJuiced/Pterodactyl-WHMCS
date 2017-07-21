@@ -364,7 +364,7 @@ function pterodactyl_CreateAccount(array $params)
             }
         }
 
-        //If auto deploy is enabled, we need additional information
+        //If auto deploy is disabled, we need additional information
         if (!$new_server['auto_deploy'])
         {
             $new_server['node_id']       = handle_overide($params, 'node_id',       'configoption11');
