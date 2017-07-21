@@ -244,7 +244,9 @@ function generate_username()
  */
 function handle_overide(array $params, $overide_variable, $config_option, $data = NULL)
 {
-    if (isset($params['configoptions'][$overide_variable]) && $params['configoptions'][$overide_variable] != "")
+    if ($data != NULL)
+        return $data;
+    else if (isset($params['configoptions'][$overide_variable]) && $params['configoptions'][$overide_variable] != "")
         return $params['configoptions'][$overide_variable];
     else if (isset($params['customfields'][$overide_variable]) && $params['customfields'][$overide_variable] != "")
         return $params['customfields'][$overide_variable];
@@ -278,7 +280,7 @@ function pterodactyl_CreateAccount(array $params)
         create_user_table();
 
         $searching = true;
-	       $current_page = 1;
+	      $current_page = 1;
         while($searching)
         {
             $users = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users?page=' . $current_page, 'GET');
@@ -304,7 +306,7 @@ function pterodactyl_CreateAccount(array $params)
         {
             //Begin by creating the user on the panel side
             $data = array("email" => $params['clientsdetails']['email'],
-                          "username" => generate_username(),
+                          "username" => $params['clientsdetails']['email'],
                           "name_first" => $params['clientsdetails']['firstname'],
                           "name_last" => $params['clientsdetails']['lastname'],
                           "root_admin" => false,
