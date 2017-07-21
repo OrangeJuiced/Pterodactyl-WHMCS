@@ -110,34 +110,34 @@ function pterodactyl_MetaData()
     );
 }
 
-function getServices()
-{
-  //Until we find a different way we're going hardcoded
-  $response = pterodactyl_api_call('GLHdlRp0J6WzPSvB', 'sTPPOWugbflg2v51.Fk8Dv9i.WpjW2K2', 'https://vulcan.kaashosting.be/api/admin/services', 'GET');
+// function getServices()
+// {
+//   //Until we find a different way we're going hardcoded
+//   $response = pterodactyl_api_call('GLHdlRp0J6WzPSvB', 'sTPPOWugbflg2v51.Fk8Dv9i.WpjW2K2', 'https://vulcan.kaashosting.be/api/admin/services', 'GET');
+//
+//   //All available services
+//   $services = [];
+//
+//   foreach ($response['data'] as $key => $value) {
+//     $services[$value['id']] = $value['attributes']['name'];
+//   }
+//
+//   return $services;
+// }
 
-  //All available services
-  $services = [];
-
-  foreach ($response['data'] as $key => $value) {
-    $services[$value['id']] = $value['attributes']['name'];
-  }
-
-  return $services;
-}
-
-function getLocations()
-{
-  //Until we find a different way we're going hardcoded
-  $response = pterodactyl_api_call('GLHdlRp0J6WzPSvB', 'sTPPOWugbflg2v51.Fk8Dv9i.WpjW2K2', 'https://vulcan.kaashosting.be/api/admin/locations', 'GET');
-
-  $locations = [];
-
-  foreach ($response['data'] as $key => $value) {
-    $locations[$value['id']] = $value['attributes']['long'];
-  }
-
-  return $locations;
-}
+// function getLocations()
+// {
+//   //Until we find a different way we're going hardcoded
+//   $response = pterodactyl_api_call('GLHdlRp0J6WzPSvB', 'sTPPOWugbflg2v51.Fk8Dv9i.WpjW2K2', 'https://vulcan.kaashosting.be/api/admin/locations', 'GET');
+//
+//   $locations = [];
+//
+//   foreach ($response['data'] as $key => $value) {
+//     $locations[$value['id']] = $value['attributes']['long'];
+//   }
+//
+//   return $locations;
+// }
 
 /**
  * Define product configuration options.
@@ -146,95 +146,93 @@ function getLocations()
  */
 function pterodactyl_ConfigOptions(array $params)
 {
-    $services = getServices();
-    $locations = getLocations();
+    // $services = getServices();
+    // $locations = getLocations();
 
     $items = array(
-        'memory' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => '1024',
-            'Description' => 'Total memory (in MB) to assign to the server',
-        ),
-        'swap' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => '0',
-            'Description' => 'Total swap (in MB) to assign to the server',
-        ),
-        'cpu' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => '100',
-            'Description' => 'Cpu limit, value is as a percentage of each core. One core being 100%.',
-        ),
-        'io' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => '500',
-            'Description' => 'Block IO adjustment number.',
-        ),
-        'disk' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => '1024',
-            'Description' => 'Total disk space (in MB) to assign to the server.',
-        ),
-        'location' => array(
-            "FriendlyName" => "Available locations",
-            'Type' => 'dropdown',
-            'Options' => $locations,
-            'Default' => '1',
-            'Description' => 'ID of location in which server should be created.',
-        ),
-        'services' => array(
-            "FriendlyName" => "Available services",
-            'Type' => 'dropdown',
-            'Options' => $services,
-            'Default' => '1',
-            'Description' => 'ID of the service this server is using.',
-        ),
-        'option' => array(
-            'Type' => 'text',
-            'Size' => '10',
-            'Default' => '1',
-            'Description' => 'ID of the specific service option this server is using.',
-        ),
-        'startup' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '',
-            'Description' => 'The startup parameters this server is using.',
-        ),
-        'auto_deploy' => array(
-            'Type' => 'yesno',
-            'Default' => 'yes',
-            'Description' => 'Tick to enable auto deploy. You do not need to set the node and allocation if you do so.',
-        ),
-        'node' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '',
-            'Description' => 'ID of the node to assign the server to (must be apart of the specified location id).',
-        ),
-        'allocation' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '',
-            'Description' => 'The allocation ID to use for the server (only if not using auto_deploy, and not using ip and port).',
-        ),
-        'pack' => array(
-            'Type' => 'text',
-            'Size' => '25',
-            'Default' => '0',
-            'Description' => 'Pack ID number, leave as 0 if you dont want to utilize it.',
-         ),
-        'description' => array(
-            'Type' => 'text',
-            'Size' => '100',
-            'Default' => '{{servicename}} server for user {{userid}}',
-            'Description' => 'Description to be used for server creation.',
-        )
+      'memory' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '1024',
+          'Description' => 'Total memory (in MB) to assign to the server',
+      ),
+      'swap' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '256',
+          'Description' => 'Total swap (in MB) to assign to the server',
+      ),
+      'cpu' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '50',
+          'Description' => 'Cpu limit, value is as a percentage of each core. One core being 100%.',
+      ),
+      'io' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '500',
+          'Description' => 'Block IO adjustment number.',
+      ),
+      'disk' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '1024',
+          'Description' => 'Total disk space (in MB) to assign to the server.',
+      ),
+      'location' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '1',
+          'Description' => 'ID of location in which server should be created.',
+      ),
+      'service' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '1',
+          'Description' => 'ID of the service this server is using.',
+      ),
+      'option' => array(
+          'Type' => 'text',
+          'Size' => '10',
+          'Default' => '1',
+          'Description' => 'ID of the specific service option this server is using.',
+      ),
+      'startup' => array(
+          'Type' => 'text',
+          'Size' => '25',
+          'Default' => '',
+          'Description' => 'The startup parameters this server is using.',
+      ),
+      'auto_deploy' => array(
+          'Type' => 'yesno',
+          'Default' => 'yes',
+          'Description' => 'Tick to enable auto deploy. You do not need to set the node and allocation if you do so.',
+      ),
+      'node' => array(
+          'Type' => 'text',
+          'Size' => '25',
+          'Default' => '',
+          'Description' => 'ID of the node to assign the server to (must be apart of the specified location id).',
+      ),
+      'allocation' => array(
+          'Type' => 'text',
+          'Size' => '25',
+          'Default' => '',
+          'Description' => 'The allocation ID to use for the server (only if not using auto_deploy, and not using ip and port).',
+      ),
+      'pack' => array(
+          'Type' => 'text',
+          'Size' => '25',
+          'Default' => '0',
+          'Description' => 'Pack ID number, leave as 0 if you dont want to utilize it.',
+       ),
+      'description' => array(
+          'Type' => 'text',
+          'Size' => '100',
+          'Default' => '{{servicename}} server for user {{userid}}',
+          'Description' => 'Description to be used for server creation.',
+      )
     );
 
     return $items;
