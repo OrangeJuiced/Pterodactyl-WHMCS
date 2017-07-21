@@ -373,7 +373,12 @@ function pterodactyl_CreateAccount(array $params)
         foreach ($servicesresponse['included'] as $key => $value) {
           if(($value['type'] == 'option') && ($value['id'] == $params['configoption8']))
           {
-            $startup = $value['attributes']['startup'];
+            if ($value['attributes']['startup'] == NULL)
+            {
+              $startup = $servicesresponse['data']['attributes']['startup'];
+            } else {
+              $startup = $value['attributes']['startup'];
+            }
           }
         }
 
