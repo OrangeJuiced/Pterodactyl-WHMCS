@@ -110,6 +110,35 @@ function pterodactyl_MetaData()
     );
 }
 
+function getServices()
+{
+  //Until we find a different way we're going hardcoded
+  $response = pterodactyl_api_call('GLHdlRp0J6WzPSvB', 'sTPPOWugbflg2v51.Fk8Dv9i.WpjW2K2', 'https://vulcan.kaashosting.be/api/admin/services', 'GET');
+
+  //All available services
+  $services = [];
+
+  foreach ($response['data'] as $key => $value) {
+    $services[$value['id']] = $value['attributes']['name'];
+  }
+
+  return $services;
+}
+
+function getLocations()
+{
+  //Until we find a different way we're going hardcoded
+  $response = pterodactyl_api_call('GLHdlRp0J6WzPSvB', 'sTPPOWugbflg2v51.Fk8Dv9i.WpjW2K2', 'https://vulcan.kaashosting.be/api/admin/locations', 'GET');
+
+  $locations = [];
+
+  foreach ($response['data'] as $key => $value) {
+    $locations[$value['id']] = $value['attributes']['long'];
+  }
+
+  return $locations;
+}
+
 /**
  * Define product configuration options.
  *
