@@ -30,7 +30,7 @@ if (!defined("WHMCS")) {
 }
 
 //Define the current version of this module
-$MODULE_VERSION = "1.1";
+$MODULE_VERSION = "1.0";
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -144,9 +144,12 @@ function getLocations()
  *
  * @return array
  */
-function pterodactyl_ConfigOptions()
+function pterodactyl_ConfigOptions(array $params)
 {
-    return array(
+    $services = getServices();
+    $locations = getLocations();
+
+    $items = array(
         'memory' => array(
             'Type' => 'text',
             'Size' => '10',
@@ -156,13 +159,13 @@ function pterodactyl_ConfigOptions()
         'swap' => array(
             'Type' => 'text',
             'Size' => '10',
-            'Default' => '256',
+            'Default' => '0',
             'Description' => 'Total swap (in MB) to assign to the server',
         ),
         'cpu' => array(
             'Type' => 'text',
             'Size' => '10',
-            'Default' => '50',
+            'Default' => '100',
             'Description' => 'Cpu limit, value is as a percentage of each core. One core being 100%.',
         ),
         'io' => array(
@@ -178,14 +181,16 @@ function pterodactyl_ConfigOptions()
             'Description' => 'Total disk space (in MB) to assign to the server.',
         ),
         'location' => array(
-            'Type' => 'text',
-            'Size' => '10',
+            "FriendlyName" => "Available locations",
+            'Type' => 'dropdown',
+            'Options' => $locations,
             'Default' => '1',
             'Description' => 'ID of location in which server should be created.',
         ),
-        'service' => array(
-            'Type' => 'text',
-            'Size' => '10',
+        'services' => array(
+            "FriendlyName" => "Available services",
+            'Type' => 'dropdown',
+            'Options' => $services,
             'Default' => '1',
             'Description' => 'ID of the service this server is using.',
         ),
@@ -231,6 +236,8 @@ function pterodactyl_ConfigOptions()
             'Description' => 'Description to be used for server creation.',
         )
     );
+
+    return $items;
 }
 
 /**
@@ -273,9 +280,7 @@ function generate_username()
  */
 function handle_overide(array $params, $overide_variable, $config_option, $data = NULL)
 {
-    if ($data != NULL)
-        return $data;
-    else if (isset($params['configoptions'][$overide_variable]) && $params['configoptions'][$overide_variable] != "")
+    if (isset($params['configoptions'][$overide_variable]) && $params['configoptions'][$overide_variable] != "")
         return $params['configoptions'][$overide_variable];
     else if (isset($params['customfields'][$overide_variable]) && $params['customfields'][$overide_variable] != "")
         return $params['customfields'][$overide_variable];
@@ -364,7 +369,15 @@ function pterodactyl_CreateAccount(array $params)
         //Handle overiding of service ID, we need to handle this before grabbing the service
         $new_server['service_id'] = handle_overide($params, 'service_id', 'configoption7');
 
-        $service = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/services/'.$new_server['service_id'].'?include=options.variables', 'GET');
+        $servicesresponse = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/services/'.$new_server['service_id'].'?include=options.variables', 'GET');
+
+        //Get the startup command from the service option
+        foreach ($servicesresponse['included'] as $key => $value) {
+          if(($value['type'] == 'option') && ($value['id'] == $params['configoption8']))
+          {
+            $startup = $value['attributes']['startup'];
+          }
+        }
 
         $replaceableFields = array('{{servicename}}', '{{userid}}');
         $dataToReplaceWith = array($service['data']['attributes']['name'], $params['clientsdetails']['firstname']);
@@ -377,11 +390,11 @@ function pterodactyl_CreateAccount(array $params)
         $new_server['pack_id']     = handle_overide($params, 'pack_id',     'configoption13');
         $new_server['location_id'] = handle_overide($params, 'location_id', 'configoption6' );
         $new_server['option_id']   = handle_overide($params, 'option_id',   'configoption8' );
-        $new_server['startup']     = handle_overide($params, 'startup',     'configoption9', $service['data']['attributes']['startup']);
+        $new_server['startup']     = handle_overide($params, 'startup',     'configoption9', $startup);
         $new_server['description']  = str_replace($replaceableFields, $dataToReplaceWith, $params['configoption14']);
 
         //We need to loop through every option to handle environment variables for our specified option
-        foreach($service['included'] as $option)
+        foreach($servicesresponse['included'] as $option)
         {
 
             if ($option['type'] !== 'variable')
