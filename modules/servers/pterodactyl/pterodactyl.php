@@ -278,7 +278,7 @@ function pterodactyl_CreateAccount(array $params)
         create_user_table();
 
         $searching = true;
-	    $current_page = 1;
+	       $current_page = 1;
         while($searching)
         {
             $users = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users?page=' . $current_page, 'GET');
@@ -803,7 +803,7 @@ function pterodactyl_ClientArea(array $params)
         $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'. $client->server_id . '?include=allocations', 'GET');
 
         $serverip['ip'] = '';
-	    $serverip['ip_alias'] = '';
+	      $serverip['ip_alias'] = '';
 
         foreach($response['included'] as $allocation)
         {
