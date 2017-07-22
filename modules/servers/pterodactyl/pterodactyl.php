@@ -755,7 +755,6 @@ function pterodactyl_AdminServicesTabFields(array $params)
             'CPU'    => $params['configoption3']."%",
             'IO'     => $params['configoption4'],
             'Disk'   => $params['configoption5']."mb",
-            'Last Access Date' => date("Y-m-d H:i:s", $response['lastLoginTimestamp']),
         );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
@@ -816,8 +815,6 @@ function pterodactyl_ClientArea(array $params)
             'tabOverviewReplacementTemplate' => $templateFile,
             'templateVariables' => array(
                 'panelhostname' => $params['serverhostname'],
-                'memory' => $params['configoption1']."mb",
-                'disk' => $params['configoption5']."mb",
                 'email' => $params['clientsdetails']['email'],
                 'server_ip' =>  $serverip['ip'],
                 'server_alias' => $serverip['ip_alias'],
