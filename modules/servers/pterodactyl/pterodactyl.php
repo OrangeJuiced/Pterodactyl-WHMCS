@@ -311,47 +311,23 @@ function pterodactyl_CreateAccount(array $params)
 
         create_user_table();
 
-        $searching = true;
-	      $current_page = 1;
-        while($searching)
+        //Begin by creating the user on the panel side
+        $data = array("email" => $params['clientsdetails']['email'],
+                      "username" => $params['clientsdetails']['firstname'] . $params['clientsdetails']['lastname'] . generate_username(),
+                      "name_first" => $params['clientsdetails']['firstname'],
+                      "name_last" => $params['clientsdetails']['lastname'],
+                      "root_admin" => false,
+                      "password" => $params['password']
+                      //"custom_id" => $params['clientsdetails']['id']
+                     );
+
+        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users', 'POST', $data);
+
+        if($response['status_code'] != 200)
         {
-            $users = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users?page=' . $current_page, 'GET');
-            foreach($users['data'] as $user)
-            {
-                if ($user['attributes']['email'] !== $params['clientsdetails']['email'])
-                    continue;
-
-                $user_id = $user['id'];
-                $searching = false;
-                break;
-            }
-
-            if($current_page == $users['meta']['pagination']['total_pages'])
-            {
-                $searching = false;
-            } else {
-                $current_page++;
-            }
-        }
-
-        if(!isset($user_id))
-        {
-            //Begin by creating the user on the panel side
-            $data = array("email" => $params['clientsdetails']['email'],
-                          "username" => $params['clientsdetails']['firstname'] . $params['clientsdetails']['lastname'] . "#" . generate_username(),
-                          "name_first" => $params['clientsdetails']['firstname'],
-                          "name_last" => $params['clientsdetails']['lastname'],
-                          "root_admin" => false,
-                          "password" => $params['password']
-                         );
-
-            $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users', 'POST', $data);
-
-            if($response['status_code'] != 200)
-            {
-                return "Error during create account: Response: ".$response['error'] + " Status Code: ".$response['status_code'];
-            }
-
+            $newAccount = false;
+            //return "Error during create account: Response: ".$response['error'] + " Status Code: ".$response['status_code'];
+        } else {
             $user_id = $response['data']['id'];
             $newAccount = true;
         }
@@ -452,43 +428,72 @@ function pterodactyl_CreateAccount(array $params)
         $service_next_due_date  = $clientproducts['products']['product'][0]['nextduedate'] == "0000-00-00" ? "----" :  $clientproducts['products']['product'][0]['nextduedate'];
         $service_recurring_amount  = "$".$clientproducts['products']['product'][0]['recurringamount']." ".$clientdetails['currency_code'];
 
-        //Format the email for sending
-        $email["customtype"] = "product";
-        $email["customsubject"] = "New Product Information";
-        $email["custommessage"] = "<p>Dear $clientname,</p>
-                                   <p>Your order for <b>$service_product_name</b> has now been activated. Please keep this message for your records.</p>
-                                   <p><b>Product/Service:</b> $service_product_name <br />
-                                   <b>Payment Method:</b> $service_payment_method <br />
-                                   <b>Amount:</b> $service_recurring_amount <br />
-                                   <b>Billing Cycle:</b> $service_billing_cycle <br />
-                                   <b>Next Due Date:</b> $service_next_due_date <br /> <br />
-                                   <b>Panel Login URL:</b> <a href='$panelurl'>$panelurl</a><br />
-                                   <b>Panel Login Email:</b> $clientemail <br />";
         if ($newAccount)
         {
-            $email["custommessage"] .= "<b>Panel Login Password:</b> $clientpassword <br />";
+            $emailvars['password'] = $clientpassword;
         }
         else
         {
-            $email["custommessage"] .= "<b>Panel Login Password:</b> Use pre-existing password. <br /><br />";
+            $emailvars['password'] = "Use pre-existing password.";
         }
+
+        //Vars for the email template to use
+        $email = [];
+        $email['panelurl'] = $panelurl;
+        $email['loginemail'] = $clientemail;
+        $email['password'] = $clientpassword;
+        $email["id"] = $params['serviceid'];
 
         foreach($response['included'] as $allocation)
         {
-            $email["custommessage"] .= "<b>Server IP:</b> ".$allocation['attributes']['ip'].":".$allocation['attributes']['port']."<br />";
+            $email["ip"] = $allocation['attributes']['ip'] . $allocation['attributes']['port'];
             if(isset($allocation['attributes']['ip_alias']))
             {
-                $email["custommessage"] .= "<b>Server Alias:</b> ".$allocation['attributes']['ip_alias'].":".$allocation['attributes']['port']."<br />";
+                $email["ip"] .= $allocation['attributes']['ip_alias'] . $allocation['attributes']['port'];
             }
         }
 
-        $email["custommessage"] .= "</p>
-                                     <p>Thank you for choosing us.</p>";
+        // //Format the email for sending
+        // $email["customtype"] = "product";
+        // $email["customsubject"] = "New Product Information";
+        // $email["custommessage"] = "<p>Dear $clientname,</p>
+        //                            <p>Your order for <b>$service_product_name</b> has now been activated. Please keep this message for your records.</p>
+        //                            <p><b>Product/Service:</b> $service_product_name <br />
+        //                            <b>Payment Method:</b> $service_payment_method <br />
+        //                            <b>Amount:</b> $service_recurring_amount <br />
+        //                            <b>Billing Cycle:</b> $service_billing_cycle <br />
+        //                            <b>Next Due Date:</b> $service_next_due_date <br /> <br />
+        //                            <b>Panel Login URL:</b> <a href='$panelurl'>$panelurl</a><br />
+        //                            <b>Panel Login Email:</b> $clientemail <br />";
+        // if ($newAccount)
+        // {
+        //     $email["custommessage"] .= "<b>Panel Login Password:</b> $clientpassword <br />";
+        // }
+        // else
+        // {
+        //     $email["custommessage"] .= "<b>Panel Login Password:</b> Use pre-existing password. <br /><br />";
+        // }
 
-        $email["custommessage"] = preg_replace( "/\r|\n/", "", $email["custommessage"] );
+        // foreach($response['included'] as $allocation)
+        // {
+        //     $email["custommessage"] .= "<b>Server IP:</b> ".$allocation['attributes']['ip'].":".$allocation['attributes']['port']."<br />";
+        //     if(isset($allocation['attributes']['ip_alias']))
+        //     {
+        //         $email["custommessage"] .= "<b>Server Alias:</b> ".$allocation['attributes']['ip_alias'].":".$allocation['attributes']['port']."<br />";
+        //     }
+        // }
 
-        $email["id"] = $params['serviceid'];
-        localAPI("sendemail", $email, $adminid[0]);
+        // $email["custommessage"] .= "</p>
+        //                              <p>Thank you for choosing us.</p>";
+
+        // $email["custommessage"] = preg_replace( "/\r|\n/", "", $email["custommessage"] );
+
+        $postData = array(
+            //'messagename' => 'Client Signup Email',
+            'id' => '386',
+        );
+
+        localAPI("SendEmail", $postData, $adminid[0]);
 
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
