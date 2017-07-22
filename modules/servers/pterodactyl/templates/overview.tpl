@@ -111,6 +111,7 @@
 								{$email}
 								<h4>Login URL: </h4>
 								<a href="{$panelhostname}">{$panelhostname}</a>
+							</div>
 						<div>
 					</div>
 			</div>
