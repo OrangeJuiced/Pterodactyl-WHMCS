@@ -441,7 +441,7 @@ function pterodactyl_CreateAccount(array $params)
         }
         else
         {
-            $email['password'] = "Use pre-existing password.";
+            $email['password'] = "Existing";
         }
 
         //Send the email
