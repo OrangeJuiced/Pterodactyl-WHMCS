@@ -111,21 +111,6 @@
 								{$email}
 								<h4>Login URL: </h4>
 								<a href="{$panelhostname}">{$panelhostname}</a>
-								<h4>Server IP: </h4>
-                                {foreach $server_ip as $ip}
-                                    <p>{$ip}</p>
-                                {/foreach}
-                                <h4>Server Alias: </h4>
-                                {foreach $server_alias as $alias}
-                                    <p>{$alias}</p>
-                                {/foreach}                                
-							</div>
-							<div class="col-md-6">
-								<h4>Memory: </h4> 
-								{$memory}
-								<h4>Hard Drive Space: </h4> 
-								{$disk}
-							</div>
 						<div>
 					</div>
 			</div>

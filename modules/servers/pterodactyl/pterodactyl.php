@@ -296,6 +296,7 @@ function pterodactyl_CreateAccount(array $params)
                       "name_last" => $params['clientsdetails']['lastname'],
                       "root_admin" => false,
                       "password" => $params['password']
+                      // TODO: Send the WHMCS id to the panel & build support for this into the panel
                       //"custom_id" => $params['clientsdetails']['id']
                      );
 
@@ -794,30 +795,18 @@ function pterodactyl_ClientArea(array $params)
     $templateFile = 'templates/overview.tpl';
 
     try {
-        $client = pterodactyl_get_client($params['serviceid']);
+        $server = $params['domain'];
 
-        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'. $client->server_id . '?include=allocations', 'GET');
+        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'. $server . '?include=allocations', 'GET');
 
         $serverip['ip'] = '';
 	      $serverip['ip_alias'] = '';
-
-        foreach($response['included'] as $allocation)
-        {
-
-            $serverip['ip'][] .= $allocation['attributes']['ip'].":".$allocation['attributes']['port'] .", ";
-            if(isset($allocation['attributes']['ip_alias']))
-            {
-                $serverip['ip_alias'] .= $allocation['attributes']['ip_alias'].":".$allocation['attributes']['port'] .", ";
-            }
-        }
 
         return array(
             'tabOverviewReplacementTemplate' => $templateFile,
             'templateVariables' => array(
                 'panelhostname' => $params['serverhostname'],
                 'email' => $params['clientsdetails']['email'],
-                'server_ip' =>  $serverip['ip'],
-                'server_alias' => $serverip['ip_alias'],
             ),
         );
     } catch (Exception $e) {
