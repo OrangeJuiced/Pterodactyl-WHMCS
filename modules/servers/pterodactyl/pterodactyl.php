@@ -200,7 +200,7 @@ function pterodactyl_ConfigOptions(array $params)
       ),
       'startup' => array(
           'Type' => 'text',
-          'Size' => '25',
+          'Size' => '75',
           'Default' => '',
           'Description' => 'The startup parameters this server is using.',
       ),
