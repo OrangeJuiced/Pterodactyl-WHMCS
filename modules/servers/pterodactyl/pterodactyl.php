@@ -362,7 +362,7 @@ function pterodactyl_CreateAccount(array $params)
         }
 
         $replaceableFields = array('{{servicename}}', '{{userid}}');
-        $dataToReplaceWith = array($service['data']['attributes']['name'], $params['clientsdetails']['firstname']);
+        $dataToReplaceWith = array($serviceresponse['data']['attributes']['name'], $params['clientsdetails']['firstname']);
 
         $new_server['memory']      = handle_overide($params, 'memory',      'configoption1' );
         $new_server['swap']        = handle_overide($params, 'swap',        'configoption2' );
