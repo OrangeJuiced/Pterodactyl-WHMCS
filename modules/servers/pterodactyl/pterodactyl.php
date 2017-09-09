@@ -291,13 +291,13 @@ function pterodactyl_CreateAccount(array $params)
 
         //Begin by creating the user on the panel side
         $data = array("email" => $params['clientsdetails']['email'],
-                      "username" => $params['clientsdetails']['firstname'] . $params['clientsdetails']['lastname'] . generate_username(),
+                      "username" => str_replace(' ', '', ($params['clientsdetails']['firstname'] . $params['clientsdetails']['lastname'] . generate_username())),
                       "name_first" => $params['clientsdetails']['firstname'],
                       "name_last" => $params['clientsdetails']['lastname'],
                       "root_admin" => false,
-                      "password" => $params['password']
+                      "password" => $params['password'],
                       // TODO: Send the WHMCS id to the panel & build support for this into the panel
-                      //"custom_id" => $params['clientsdetails']['id']
+                      "custom_id" => $params['clientsdetails']['id']
                      );
 
         $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users', 'POST', $data);
