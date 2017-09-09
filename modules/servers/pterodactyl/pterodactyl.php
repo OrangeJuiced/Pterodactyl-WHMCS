@@ -406,12 +406,13 @@ function pterodactyl_CreateAccount(array $params)
         $server_id = $response['data']['id'];
 
         //Grab the IP from the response
+        //If the IP has an alias we use that
         foreach($response['included'] as $allocation)
         {
             $ip = $allocation['attributes']['ip'] . ":" . $allocation['attributes']['port'];
             if(isset($allocation['attributes']['ip_alias']))
             {
-                $ip .= $allocation['attributes']['ip_alias'] . ":" . $allocation['attributes']['port'];
+                $ip = $allocation['attributes']['ip_alias'] . ":" . $allocation['attributes']['port'];
             }
         }
 
