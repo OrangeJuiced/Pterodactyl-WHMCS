@@ -406,7 +406,7 @@ function pterodactyl_CreateAccount(array $params)
         $server_id = $response['data']['id'];
 
         if ($new_server['service_id'] == 2) {
-            $allocation = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$new_server['service_id'].'/allocation', 'POST');
+            $allocation = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$server_id.'/allocation', 'POST');
 
             $data['startup'] = $new_server['startup'];
             $data['service_id'] = $new_server['service_id'];
@@ -414,7 +414,7 @@ function pterodactyl_CreateAccount(array $params)
             $data['pack_id'] = $new_server['pack_id'];
             $data['env_46'] = $allocation['port'];
 
-            $responsealloc = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$new_server['service_id'].'/startup', 'PUT', $data);
+            $responsealloc = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$server_id.'/startup', 'PUT', $data);
         }
 
         //Grab the IP from the response
