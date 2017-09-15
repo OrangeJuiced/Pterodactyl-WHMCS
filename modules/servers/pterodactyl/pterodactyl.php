@@ -405,14 +405,16 @@ function pterodactyl_CreateAccount(array $params)
         //Get the server ID from the response
         $server_id = $response['data']['id'];
 
+        sleep(10);
+
         if ($new_server['service_id'] == 2) {
-            $allocation = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$server_id.'/allocation', 'POST');
+            $newalloc = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$server_id.'/allocation', 'POST');
 
             $data['startup'] = $new_server['startup'];
             $data['service_id'] = $new_server['service_id'];
             $data['option_id'] = $new_server['option_id'];
             $data['pack_id'] = $new_server['pack_id'];
-            $data['env_46'] = $allocation['port'];
+            $data['env_46'] = $newalloc['port'];
 
             $responsealloc = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'.$server_id.'/startup', 'PUT', $data);
         }
@@ -421,10 +423,13 @@ function pterodactyl_CreateAccount(array $params)
         //If the IP has an alias we use that
         foreach($response['included'] as $allocation)
         {
-            $ip = $allocation['attributes']['ip'] . ":" . $allocation['attributes']['port'];
-            if(isset($allocation['attributes']['ip_alias']))
+            if(($new_server['service_id'] == 2) && isset($allocation['attributes']['ip_alias']))
             {
+                $ip = $allocation['attributes']['ip_alias'] . ":" . $newalloc['port'];
+            } elseif (isset($allocation['attributes']['ip_alias'])) {
                 $ip = $allocation['attributes']['ip_alias'] . ":" . $allocation['attributes']['port'];
+            } else {
+                $ip = $allocation['attributes']['ip'] . ":" . $allocation['attributes']['port'];
             }
         }
 
