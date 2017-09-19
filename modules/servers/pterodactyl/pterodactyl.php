@@ -766,6 +766,7 @@ function pterodactyl_ChangePackage(array $params)
 function pterodactyl_AdminServicesTabFields(array $params)
 {
     try {
+        $responsedata = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/servers/'. $params['domain'], 'GET');
         $response = array();
 
         return array(
@@ -774,6 +775,7 @@ function pterodactyl_AdminServicesTabFields(array $params)
             'CPU'    => $params['configoption3']."%",
             'IO'     => $params['configoption4'],
             'Disk'   => $params['configoption5']."mb",
+            "Server page" => "<a href='https://vulcan.kaashosting.nl/server/" . $responsedata['data']['attributes']['uuidShort'] . "' target='_blank'><button type='button' class='btn btn-default'>View</button></a>",
         );
     } catch (Exception $e) {
         // Record the error in WHMCS's module log.
