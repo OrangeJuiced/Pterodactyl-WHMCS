@@ -472,7 +472,7 @@ function pterodactyl_CreateAccount(array $params)
         $response = localAPI("sendemail", $postData, $adminid[0]);
 
     } catch (Exception $e) {
-        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id., 'DELETE');
+        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id, 'DELETE');
         // Record the error in WHMCS's module log.
         logModuleCall(
             'pterodactylWHMCS',
