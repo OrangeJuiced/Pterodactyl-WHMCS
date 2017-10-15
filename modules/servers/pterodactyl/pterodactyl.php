@@ -286,6 +286,7 @@ function handle_overide(array $params, $overide_variable, $config_option, $data 
  */
 function pterodactyl_CreateAccount(array $params)
 {
+    $user_id = null;
     try {
         $newAccount = false;
 
@@ -296,7 +297,6 @@ function pterodactyl_CreateAccount(array $params)
                       "name_last" => $params['clientsdetails']['lastname'],
                       "root_admin" => false,
                       "password" => $params['password'],
-                      // TODO: Send the WHMCS id to the panel & build support for this into the panel
                       "custom_id" => $params['clientsdetails']['id']
                      );
 
@@ -472,6 +472,7 @@ function pterodactyl_CreateAccount(array $params)
         $response = localAPI("sendemail", $postData, $adminid[0]);
 
     } catch (Exception $e) {
+        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id., 'DELETE');
         // Record the error in WHMCS's module log.
         logModuleCall(
             'pterodactylWHMCS',
