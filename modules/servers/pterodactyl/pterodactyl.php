@@ -423,10 +423,7 @@ function pterodactyl_CreateAccount(array $params)
         //If the IP has an alias we use that
         foreach($response['included'] as $allocation)
         {
-            if(($new_server['service_id'] == 2) && isset($allocation['attributes']['ip_alias']))
-            {
-                $ip = $allocation['attributes']['ip_alias'] . ":" . $newalloc['port'];
-            } elseif (isset($allocation['attributes']['ip_alias'])) {
+            if (isset($allocation['attributes']['ip_alias'])) {
                 $ip = $allocation['attributes']['ip_alias'] . ":" . $allocation['attributes']['port'];
             } else {
                 $ip = $allocation['attributes']['ip'] . ":" . $allocation['attributes']['port'];
