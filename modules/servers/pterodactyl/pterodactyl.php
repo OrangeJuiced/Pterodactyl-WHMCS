@@ -399,6 +399,8 @@ function pterodactyl_CreateAccount(array $params)
 
         if($response['status_code'] != 200)
         {
+            $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id, 'DELETE');
+            
             return "Error during create server: Response Message: ".$response['error'] + " Status Code: ".$response['status_code'];
         }
 
@@ -469,7 +471,6 @@ function pterodactyl_CreateAccount(array $params)
         $response = localAPI("sendemail", $postData, $adminid[0]);
 
     } catch (Exception $e) {
-        $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id, 'DELETE');
         // Record the error in WHMCS's module log.
         logModuleCall(
             'pterodactylWHMCS',
