@@ -399,8 +399,8 @@ function pterodactyl_CreateAccount(array $params)
 
         if($response['status_code'] != 200)
         {
-            $response = pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id, 'DELETE');
-            
+            pterodactyl_api_call($params['serverusername'], $params['serverpassword'], $params['serverhostname'].'/api/admin/users/'.$user_id, 'DELETE');
+
             return "Error during create server: Response Message: ".$response['error'] + " Status Code: ".$response['status_code'];
         }
 
@@ -477,7 +477,7 @@ function pterodactyl_CreateAccount(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
 
         return $e->getMessage();
@@ -518,7 +518,7 @@ function pterodactyl_TestConnection(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
         $success = false;
         $errorMsg = $e->getMessage();
@@ -560,7 +560,7 @@ function pterodactyl_SuspendAccount(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
 
         return $e->getMessage();
@@ -600,7 +600,7 @@ function pterodactyl_UnsuspendAccount(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
 
         return $e->getMessage();
@@ -640,7 +640,7 @@ function pterodactyl_TerminateAccount(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
 
         return $e->getMessage();
@@ -686,7 +686,7 @@ function pterodactyl_ChangePassword(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
 
         return $e->getMessage();
@@ -737,7 +737,7 @@ function pterodactyl_ChangePackage(array $params)
             __FUNCTION__,
             $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage()
         );
 
         return $e->getMessage();
